@@ -66,11 +66,6 @@ def users():
     return render_template("user_debts.html", usersList=usersList)
 
 
-@app.route("/upload")
-def upload():
-    return render_template("upload.html")
-
-
 @app.route("/add-receipt", methods=["GET", "POST"])
 def add_receipt() -> str:
     """
@@ -89,15 +84,7 @@ def add_receipt() -> str:
         return redirect(
             url_for("static", filename=f'{app.config["UPLOAD_FOLDER"]}/{filename}')
         )
-    return """
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form action="" method=post enctype=multipart/form-data>
-      <p><input type=file name=file>
-         <input type=submit value=Upload>
-    </form>
-    """
+    return render_template("upload.html")
 
 
 if __name__ == "__main__":

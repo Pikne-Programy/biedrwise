@@ -14,7 +14,7 @@ class DataBase:
     def __del__(self):
         self.r.close()
 
-    def add_receipt(self, data: dict[str, tuple[int, int]]):
+    def add_receipt(self, data: dict[str, tuple[float, float]]):
         assert isinstance(data, dict)
         rec_id = self.r.get('rec_id')
         self.r.incr('rec_id')

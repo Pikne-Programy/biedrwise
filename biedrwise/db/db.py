@@ -8,6 +8,8 @@ class DataBase:
             self.r.set('rec_id', 0)
         if self.r.get('row_id') is None:
             self.r.set('row_id', 0)
+        if self.r.get('user_id') is None:
+            self.r.set('user_id', 0)
 
     def __del__(self):
         self.r.close()
@@ -22,7 +24,7 @@ class DataBase:
         row_id = self.r.get('row_id')
         self.r.incr('row_id')
         self.r.hset(f'row:{row_id}', mapping=val_dict)
-        self.r.lpush(f'recipe:list:{rec_id}', row_id)
+        self.r.rpush(f'recipe:list:{rec_id}', row_id)
         return row_id
 
     def del_recipe(self, rec_id):
@@ -36,6 +38,7 @@ class DataBase:
             self.r.delete(key)
         self.r.set('row_id', 0)
         self.r.set('rec_id', 0)
+        self.r.set('user_id', 0)
 
     def print_recipe(self, rec_id):
         p = self.r.pipeline()
@@ -44,3 +47,19 @@ class DataBase:
 
         for h in p.execute():
             print(h)
+
+    def add_user(self):
+        user_id = self.r.get('user_id')
+        self.r.incr('user_id')
+        self.r.set(f'user:{user_id}:spending', 0)
+        return user_id
+
+    def add_row_users(self, row_id, users):
+        assert row_id is not None
+        assert users is not None
+        self.r.delete(f'row:{row_id}:users')
+        self.r.rpush(f'row:{row_id}:users', *users)
+        for user_id in users:
+            price = self.r.hget(f'row:{row_id}', 'price')
+            frac_price = float(price) / len(users)
+            self.r.incrbyfloat(f'user:{user_id}:spending', frac_price)

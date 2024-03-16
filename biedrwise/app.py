@@ -72,7 +72,7 @@ def receipts():
         {"date": "2024-03-09", "price": "18.00zł"},
         {"date": "2024-02-28", "price": "123.00zł"},
     ]
-    return render_template("recipes.html", receipt_list=receipt_list)
+    return render_template("receipts.html", receipt_list=receipt_list)
 
 @app.route("/add-receipt", methods=["GET", "POST"])
 def add_receipt() -> str:

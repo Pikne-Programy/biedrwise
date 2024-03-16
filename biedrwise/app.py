@@ -65,6 +65,14 @@ def users():
     ]
     return render_template("user_debts.html", usersList=usersList)
 
+@app.route("/receipts")
+def receipts():
+    receipt_list = [
+        {"date": "2024-03-10", "price": "12.00zł"},
+        {"date": "2024-03-09", "price": "18.00zł"},
+        {"date": "2024-02-28", "price": "123.00zł"},
+    ]
+    return render_template("recipes.html", receipt_list=receipt_list)
 
 @app.route("/add-receipt", methods=["GET", "POST"])
 def add_receipt() -> str:

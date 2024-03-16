@@ -3,54 +3,64 @@
 {% block content %}
 <section class="section">
   <div class="box">
-  <!-- todo -->
+    <div class="tile is-ancestor">
+      <div class="tile">
+        <p class="is-size-3">kto płacił</p>
+      </div>
+      <div class="tile">
+        <p class="is-size-3">data</p>
+      </div>
+      <div class="tile">
+        <p class="is-size-3">koszt</p>
+      </div>
+    </div>
   </div>
-  
+
   <form id="upload_form" action="" method="post">
     <div class="box">
-  <div class="control is-expanded">
-      <button type="submit" class="button is-large is-fullwidth is-info">
-  <span class="icon is-medium">
-    <i class="fa fa-save"></i>
-  </span>
+      <div class="control is-expanded">
+        <button type="submit" class="button is-large is-fullwidth is-info">
+          <span class="icon is-medium">
+            <i class="fa fa-save"></i>
+          </span>
           <span>Save</span>
-      </button>
-  </div>
-</div>
-  <div class="box">
-    <section class="section">
-      {% for data in dataList %}
-      <div class="list">
-        <div class="tile is-ancestor">
-          <div class="tile">
-            <div class="is-size-2">{{ data.name }}</div>
-          </div>
-          <div class="tile">
-            <div class="is-size-4">{{ data.description }}</div>
-          </div>
-          <div class="tile is-ancestor is-vertical is-2">
-            {% for j in range(4) %}
+        </button>
+      </div>
+    </div>
+    <div class="box">
+      <section class="section">
+        {% for data in dataList %}
+        <div class="list">
+          <div class="tile is-ancestor">
             <div class="tile">
-              <div class="is-pulled-up">
-                <div class="buttons is-right">
-                  <div class="field">
-                    <label class="checkbox">`
-                      <input type="checkbox" checked name="{{ data.cb[j] }}">
-                      <span class="check"></span>
-                      <span class="is-size-3">Ch`ckbox</span>
-                    </label>
+              <div class="is-size-2">{{ data.name }}</div>
+            </div>
+            <div class="tile">
+              <div class="is-size-4">{{ data.description }}</div>
+            </div>
+            <div class="tile is-ancestor is-vertical is-2">
+              {% for j in range(4) %}
+              <div class="tile">
+                <div class="is-pulled-up">
+                  <div class="buttons is-right">
+                    <div class="field">
+                      <label class="checkbox">
+                        <input type="checkbox" checked name="{{ data.cb[j] }}">
+                        <span class="check"></span>
+                        <span class="is-size-3">Checkbox</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
         </div>
-      </div>
-      </br>
-      <hr style="background-color: black;">
-      {% endfor %}
-  </div>
-</form>
+        </br>
+        <hr style="background-color: black;">
+        {% endfor %}
+    </div>
+  </form>
 </section>
 {% endblock content %}

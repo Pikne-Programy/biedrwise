@@ -8,14 +8,12 @@
         {% for data in dataList %}
         <div class="tile is-ancestor">
           <div class="tile">
-            <div class="list-item">
-              <div>
                 <div class="is-size-2">{{ data.name }}</div>
-                <div>{{ data.description }}</div>
-              </div>
-            </div>
           </div>
-          <div class="tile is-ancestor is-vertical">
+          <div class="tile">
+            <div class="is-size-4">{{ data.description }}</div>
+          </div>
+          <div class="tile is-ancestor is-vertical is-2">
             {% for _ in range(4) %}
             <div class="tile">
               <div class="is-pulled-up">
@@ -34,6 +32,7 @@
           </div>
         </div>
       </div>
+      </br>
       <hr style="background-color: black;">
       {% endfor %}
   </div>

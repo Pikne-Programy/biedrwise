@@ -6,29 +6,36 @@
     <section class="section">
       <div class="list">
         {% for data in dataList %}
-        <div class="list-item">
-          <div class="list-item-content">
-            <div class="list-item-title is-size-2">{{ data.name }}</div>
-            <div class="list-item-description">{{ data.description }}</div>
-          </div>
-          {% for _ in range(4) %}
-          <div class="list-item-controls is-pulled-up">
-            <div class="buttons is-right">
-              <div class="field">
-                <label class="b-checkbox checkbox">
-                  <input type="checkbox" value="false" checked>
-                  <span class="check"></span>
-                  <span class="control-label is-size-3">Checkbox</span>
-                </label>
+        <div class="tile is-ancestor">
+          <div class="tile">
+            <div class="list-item">
+              <div>
+                <div class="is-size-2">{{ data.name }}</div>
+                <div>{{ data.description }}</div>
               </div>
             </div>
           </div>
-          {% endfor %}
+          <div class="tile is-ancestor is-vertical">
+            {% for _ in range(4) %}
+            <div class="tile">
+              <div class="is-pulled-up">
+                <div class="buttons is-right">
+                  <div class="field">
+                    <label class="checkbox">
+                      <input type="checkbox" value="false" checked>
+                      <span class="check"></span>
+                      <span class="is-size-3">Checkbox</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
         </div>
-        <hr style="background-color: black;">
-        {% endfor %}
-
-
       </div>
-    </section>
-    {% endblock content %}
+      <hr style="background-color: black;">
+      {% endfor %}
+  </div>
+</section>
+{% endblock content %}

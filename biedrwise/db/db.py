@@ -4,13 +4,18 @@ import redis
 class DataBase:
     def __init__(self, host='localhost', port=6379):
         self.r = redis.Redis(host=host, port=port, decode_responses=True)
-        # self.clear_all()
+        self.clear_all()
         if self.r.get('rec_id') is None:
             self.r.set('rec_id', 0)
         if self.r.get('row_id') is None:
             self.r.set('row_id', 0)
         if self.r.get('user_id') is None:
             self.r.set('user_id', 0)
+        
+        self.add_user("Marcin")
+        self.add_user("Michał")
+        self.add_user("Dominik")
+        self.add_user("Gracjan")
 
     def __del__(self):
         self.r.close()

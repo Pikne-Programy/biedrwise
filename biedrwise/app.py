@@ -62,7 +62,12 @@ def receipt(rec_id):
         ]
         data = db.get_receipt_data(rec_id)
         print(data_list, file=stderr)
-        return render_template("home.html", dataList=data_list, head=data)
+        return render_template(
+            "home.html",
+            dataList=data_list,
+            head=data,
+            ludzie="Marcin,Michał,Dominik,Gracjan".split(","),
+        )
 
 
 @app.route("/")
@@ -82,7 +87,7 @@ def receipts():
     # ]
     receipt_list = db.get_receipts()
     print(receipt_list, file=stderr)
-    receipt_list = [{**x, "src": f'/receipt/{int(x["payed"])}'} for x in receipt_list]
+    receipt_list = [{**x, "src": f'/receipt/{i}'} for i, x in enumerate(receipt_list)]
     return render_template("receipts.html", receipt_list=receipt_list)
 
 
@@ -105,9 +110,9 @@ def add_receipt() -> str:
         filepath = upload_folder / filename
         file.save(filepath)
         data = ocr_read(str(filepath.absolute()), file.mimetype == "application/pdf")
-        print("\n" * 9, request.form, file=stderr)
-        print("WHO", request.form["who"], file=stderr)
-        rec_id = db.add_receipt(data, (date.today().isoformat(), 0.0, 0))
+        rec_id = db.add_receipt(
+            data, (date.today().isoformat(), 0.0, int(request.form["who"]))
+        )
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
     return render_template(
         "upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(",")

@@ -6,7 +6,7 @@
     <div class="tile is-ancestor">
       <div class="tile is-ancestor">
         <div class="tile">
-          <p class="is-size-3">kto płacił</p>
+          <p class="is-size-3">{{ head.date }}</p>
         </div>
       </div>
       <div class="tile">
@@ -49,7 +49,7 @@
                       <label class="checkbox">
                         <input type="checkbox" checked name="{{ data.cb[j] }}">
                         <span class="check"></span>
-                        <span class="is-size-3">Checkbox</span>
+                        <span class="is-size-3">{{ ludzie[j] }}</span>
                       </label>
                     </div>
                   </div>

@@ -86,8 +86,9 @@ def add_receipt() -> str:
         file.save(filepath)
         data = ocr_read(str(filepath.absolute()), file.mimetype == "application/pdf")
         rec_id = db.add_receipt(data)
+        print(request.form)
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
-    return render_template("upload.html")
+    return render_template("upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(','))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

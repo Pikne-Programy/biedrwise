@@ -11,8 +11,8 @@
             <div class="list-item-title is-size-2">{{ data.name }}</div>
             <div class="list-item-description">{{ data.description }}</div>
           </div>
-
-          <div class="list-item-controls">
+          {% for _ in range(4) %}
+          <div class="list-item-controls is-pulled-up">
             <div class="buttons is-right">
               <div class="field">
                 <label class="b-checkbox checkbox">
@@ -23,6 +23,7 @@
               </div>
             </div>
           </div>
+          {% endfor %}
         </div>
         <hr style="background-color: black;">
         {% endfor %}

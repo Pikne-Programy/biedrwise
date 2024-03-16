@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from kropka.reader import read
 
 app = Flask(__name__)
 

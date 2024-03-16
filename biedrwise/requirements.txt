@@ -1,1 +1,6 @@
 Flask
+opencv-python
+pytesseract
+numpy
+scikit-image
+pdf2image

@@ -4,27 +4,6 @@
 <section class="section">
   <div class="box">
     <div class="tile is-ancestor">
-      <div class="tile is-ancestor">
-        <div class="tile">
-          <p class="is-size-3">kto płacił</p>
-        </div>
-        <div class="tile is-ancestor is-vertical is-8">
-          {% for j in range(4) %}
-          <div class="tile">
-            <div class="is-pulled-up">
-              <div class="buttons is-right">
-                <div class="field">
-                  <label class="checkbox">
-                    <input type="radio" checked name="gowno">
-                    <span class="check"></span>
-                    <span class="is-size-3">przycisk radiowy</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
       <div class="tile">
         <p class="is-size-3">Data: {{ head.date }}</p>
       </div>

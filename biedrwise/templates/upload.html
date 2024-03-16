@@ -2,23 +2,30 @@
 
 {% block content %}
 <section class="section">
-    <div class="container">
-        <h1 class="title">Prześlij paragon</h1>
-        <form id="upload_form" action="" method="post" enctype="multipart/form-data">
-            <div class="field">
-                <label class="label">Wybierz plik</label>
-                <div class="control">
-                    <input class="input" type="file" name="file">
+    <div class="container" style="display: flex; align-items: flex-start;">
+        <div style="width: 30%;">
+            <h1 class="title">Prześlij paragon</h1>
+            <form id="upload_form" action="/upload" method="post" enctype="multipart/form-data">
+                <div class="field">
+                    <label class="label">Wybierz plik</label>
+                    <div class="control">
+                        <input class="input" type="file" name="file">
+                    </div>
                 </div>
-            </div>
-            <div class="field">
-                <div class="control">
-                    <button class="button is-primary" style="background-color: #f14668;" type="submit">Prześlij</button>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" style="background-color: #f14668;"
+                            type="submit">Prześlij</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div style="text-align: center;">
+            <img src="/static/xd.png" alt="xd" style="width: 40%; height: 40%; display: inline-block; margin-left:20vw;">
+        </div>
     </div>
 </section>
+
 
 <script>
     document.getElementById("upload_form").addEventListener("submit", function (event) {

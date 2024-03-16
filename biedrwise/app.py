@@ -1,30 +1,54 @@
-from flask import Flask, render_template
+# pylint: disable=missing-module-docstring
+import os
+from sys import stderr
+from pathlib import Path
+from datetime import datetime
+from flask import Flask, request, redirect, url_for, render_template
+
 from db.db import DataBase
 
+me = Path(__file__)
+os.seteuid(os.stat(me).st_uid)
+# os.setegid(os.stat(me).st_uid)
+
 app = Flask(__name__)
-db = DataBase('redis', 6379)
+app.config["UPLOAD_FOLDER"] = "uploaded"
+db = DataBase("redis", 6379)
+
+static_folder = Path("static")
+upload_folder = static_folder / app.config["UPLOAD_FOLDER"]
+upload_folder.mkdir(parents=True, exist_ok=True)
+
+SUPPORTED_MIMETYPES = {
+    "application/pdf": "pdf",
+    "image/jpeg": "jpg",
+    "image/png": "png",
+}
+
+
+def get_new_upload_filename():
+    """
+    Generate filename for new upload.
+    Example: `2024-03-16T15_34_25.143617`
+    """
+    return datetime.today().isoformat().replace(":", "_")
+
 
 @app.route("/")
 def home():
-    dataList = [
-    {
-        "name":"Cofe",
-        "description":"Good beverage"
-    },
-    {
-        "name":"Tea",
-        "description":"Bad beverage"
-    },
-        {
-        "name":"Blech",
-        "description":"Awesome beverage (cures autism)"
-    },
-]
-    return render_template("home.html", dataList = dataList)
+    data_list = [
+        {"name": "Cofe", "description": "Good beverage"},
+        {"name": "Tea", "description": "Bad beverage"},
+        {"name": "Blech", "description": "Awesome beverage (cures autism)"},
+    ]
+    return render_template("home.html", dataList=data_list)
+
+
 @app.route("/recipe/<rec_id>")
 def recipe(rec_id):
     data_list = db.print_recipe(rec_id)
     return render_template("home.html", dataList=data_list)
+
 
 @app.route("/summary")
 def spending():
@@ -35,25 +59,46 @@ def spending():
 @app.route("/user_debts")
 def users():
     usersList = [
-        {
-            "name":"Marcin Cpp",
-            "debt":"10.00zł"
-        },
-        {
-            "name":"Kret Kretes",
-            "debt":"21.37zł"
-        },
-        {
-            "name":"Michał Pobuta",
-            "debt":"125.00zł"
-        }
+        {"name": "Marcin Cpp", "debt": "10.00zł"},
+        {"name": "Kret Kretes", "debt": "21.37zł"},
+        {"name": "Michał Pobuta", "debt": "125.00zł"},
     ]
     return render_template("user_debts.html", usersList=usersList)
-    
+
+
 @app.route("/upload")
 def upload():
     return render_template("upload.html")
 
+
+@app.route("/add-receipt", methods=["GET", "POST"])
+def add_receipt() -> str:
+    """
+    `/add-receipt` route
+    GET: print upload file form
+    POST: process uploaded file
+    """
+    if request.method == "POST" and "file" in request.files:
+        file = request.files["file"]
+        if not file:
+            return "ERR: no file"
+        if file.mimetype not in SUPPORTED_MIMETYPES:
+            return f"ERR: {file.mimetype} is not supported"
+        filename = f"{get_new_upload_filename()}.{SUPPORTED_MIMETYPES[file.mimetype]}"
+        file.save(upload_folder / filename)
+        return redirect(
+            url_for("static", filename=f'{app.config["UPLOAD_FOLDER"]}/{filename}')
+        )
+    return """
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form action="" method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+         <input type=submit value=Upload>
+    </form>
+    """
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
-    

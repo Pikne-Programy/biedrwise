@@ -32,3 +32,9 @@ docker compose down; docker compose up -d --build
 ```sh
 docker compose exec biedrwise /bin/bash
 ```
+
+<!--
+python3 -m venv venv
+. ./venv/bin/activate
+pip install -r biedrwise/requirements.txt
+-->

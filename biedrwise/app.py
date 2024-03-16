@@ -35,6 +35,18 @@ def get_new_upload_filename():
     """
     return datetime.today().isoformat().replace(":", "_")
 
+@app.route("/receipt/<rec_id>", methods=['POST', 'GET'])
+def receipt(rec_id):
+    if request.method == "POST":
+        print(request.form, file=stderr)
+        print('.', file=stderr)
+        return redirect('/')
+    else:
+        data_list = [{**x, 'cb': [f'cb_{i}_{j}' for j in range(4)]} for i, x in enumerate(db.print_recipe(rec_id))]
+        print(data_list, file=stderr)
+        return render_template('home.html', dataList=data_list)
+
+
 @app.route("/")
 def home():
     data_list = [
@@ -61,17 +73,12 @@ def spending():
     ]
     return render_template("user_debts.html", usersList=usersList)
 
-@app.route("/receipt/<rec_id>")
-def receipt(rec_id):
-    data_list = db.print_receipt(rec_id)
-    return render_template("home.html", dataList=data_list)
-
 @app.route("/receipts")
 def receipts():
     receipt_list = [
-        {"date": "2024-03-10", "price": "12.00zł"},
-        {"date": "2024-03-09", "price": "18.00zł"},
-        {"date": "2024-02-28", "price": "123.00zł"},
+        {"date": "2024-03-10", "price": "12.00zł", 'src':'/receipt/0'},
+        {"date": "2024-03-09", "price": "18.00zł", 'src':'/receipt/1'},
+        {"date": "2024-02-28", "price": "123.00zł", 'src':'/receipt/2'},
     ]
     return render_template("receipts.html", receipt_list=receipt_list)
 

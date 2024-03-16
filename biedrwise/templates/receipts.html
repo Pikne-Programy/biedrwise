@@ -6,6 +6,7 @@
     <section class="section">
       <div class="list">
         {% for receipt in receipt_list %}
+            <a href="{{ receipt.src }}">
         <div class="list-item">
           <div class="list-item-content">
             <div class="list-item-title is-size-3">{{ receipt.date }}</div>
@@ -14,6 +15,7 @@
           </div>
         </div>
         <hr style="background-color: black;">
+            </a>
         {% endfor %}
 
 

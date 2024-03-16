@@ -24,11 +24,13 @@ class DataBase:
             val_dict = {'name': name, 'price': val[0], 'count': val[1]}
             self._add_row(rec_id, val_dict)
         prices = [float(x[0]) for x in rows.values()]
+        sum_prices = sum(prices)
         self.r.hset(f'receipt:{rec_id}:data', mapping={
             'date': data[0],
-            'sum': sum(prices),
+            'sum': sum_prices,
             'payed': data[2]
         })
+        self.r.hincrbyfloat(f"user:{data[2]}", 'spending', -sum_prices)
         self.r.rpush("receipt:list", rec_id)
         return rec_id
 
@@ -55,10 +57,12 @@ class DataBase:
 
     def print_receipt(self, rec_id):
         p = self.r.pipeline()
+        ids = []
         for row_id in self.r.lrange(f'receipt:list:{rec_id}', 0, -1):
             p.hgetall(f'row:{row_id}')
+            ids += [row_id]
 
-        return [h for h in p.execute()]
+        return [{**h, "row_id": row_id} for h, row_id in zip(p.execute(), ids)]
 
     def get_receipt_data(self, rec_id):
         x = self.r.hgetall(f'receipt:{rec_id}:data')

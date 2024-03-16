@@ -44,7 +44,7 @@ def receipt(rec_id):
         return redirect('/')
     else:
         data_list = [{**x,
-                      'cb': [f'cb_{i}_{j}' for j in range(4)],
+                      'cb': [f'cb_{x.row_id}_{j}' for j in range(4)],
                       } for i, x in enumerate(db.print_receipt(rec_id))]
         data = db.get_receipt_data(rec_id)
         print(data_list, file=stderr)
@@ -91,7 +91,7 @@ def add_receipt() -> str:
         print("\n"*9,request.form, file=stderr)
         print("WHO", request.form["who"], file=stderr)
         rec_id = db.add_receipt(
-            data, (date.today().isoformat(), 0.0, request.form["who"])
+            data, (date.today().isoformat(), 0.0, 0)
         )
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
     return render_template("upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(','))

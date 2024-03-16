@@ -6,7 +6,6 @@ services:
       dockerfile: biedrwise.dockerfile
     volumes:
       - ./biedrwise:/app
-      - venv:/app/venv
     depends_on:
       - redis
     ports:
@@ -21,4 +20,3 @@ services:
       - 6379:6379
 volumes:
   redis:
-  venv:

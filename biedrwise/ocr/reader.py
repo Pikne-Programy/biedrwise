@@ -36,8 +36,11 @@ def ocr_read(filenane: str, pdf: bool) -> dict:
             and is_number(lines[idx + 2])
         ):
             product_name = line.split(" ")[0]
+            if is_number(product_name[0]):
+                continue
             cnt = line.split(" ")[-4]
             price = lines[idx + 2].replace(",", ".")
+            price = price.replace("-", ".")
             print(product_name, price, cnt)
             if product_name in res:
                 new_price = res[product_name][0] + float(price)
@@ -47,7 +50,10 @@ def ocr_read(filenane: str, pdf: bool) -> dict:
                 res[product_name] = (float(price), float(cnt))
         else:
             product_name = line.split(" ")[0]
+            if is_number(product_name[0]):
+                continue
             price = line.split(" ")[-1].replace(",", ".")
+            price = price.replace("-", ".")
             cnt = line.split(" ")[-4]
             print(product_name, price, cnt)
             if product_name in res:

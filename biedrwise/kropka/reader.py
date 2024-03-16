@@ -14,8 +14,8 @@ def pdf_to_img(file):
     return img
 
 
-def read(file) -> dict:
-    # if pdf is pdf
+def read(file, pdf=True) -> dict:
+    # if file is pdf
     file = convert_from_path(file, 500)
     # else it has to be omitted
     image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)

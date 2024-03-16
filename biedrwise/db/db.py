@@ -14,29 +14,29 @@ class DataBase:
     def __del__(self):
         self.r.close()
 
-    def add_recipe(self, data):
+    def add_receipt(self, data: dict[str, tuple[int, int]]):
         assert isinstance(data, dict)
         rec_id = self.r.get('rec_id')
         self.r.incr('rec_id')
         for name, val in data.items():
             assert len(val) == 2
             val_dict = {'name': name, 'price': val[0], 'count': val[1]}
-            self.add_row(rec_id, val_dict)
+            self._add_row(rec_id, val_dict)
         return rec_id
 
-    def add_row(self, rec_id, val_dict):
+    def _add_row(self, rec_id, val_dict):
         assert rec_id is not None
         row_id = self.r.get('row_id')
         self.r.incr('row_id')
         self.r.hset(f'row:{row_id}', mapping=val_dict)
-        self.r.rpush(f'recipe:list:{rec_id}', row_id)
+        self.r.rpush(f'receipt:list:{rec_id}', row_id)
         return row_id
 
-    def del_recipe(self, rec_id):
+    def del_receipt(self, rec_id):
         assert rec_id is not None
-        for row_id in self.r.lrange(f'recipe:list:{rec_id}', 0, -1):
+        for row_id in self.r.lrange(f'receipt:list:{rec_id}', 0, -1):
             self.r.delete(f'row:{row_id}')
-        self.r.delete(f'recipe:list:{rec_id}')
+        self.r.delete(f'receipt:list:{rec_id}')
 
     def clear_all(self):
         for key in self.r.scan_iter("*"):
@@ -45,9 +45,9 @@ class DataBase:
         self.r.set('rec_id', 0)
         self.r.set('user_id', 0)
 
-    def print_recipe(self, rec_id):
+    def print_receipt(self, rec_id):
         p = self.r.pipeline()
-        for row_id in self.r.lrange(f'recipe:list:{rec_id}', 0, -1):
+        for row_id in self.r.lrange(f'receipt:list:{rec_id}', 0, -1):
             p.hgetall(f'row:{row_id}')
 
         return [h for h in p.execute()]

@@ -6,6 +6,7 @@ from datetime import datetime
 from flask import Flask, request, redirect, url_for, render_template
 
 from db.db import DataBase
+from ocr.reader import ocr_read
 
 me = Path(__file__)
 os.seteuid(os.stat(me).st_uid)
@@ -35,6 +36,22 @@ def get_new_upload_filename():
     return datetime.today().isoformat().replace(":", "_")
 
 @app.route("/")
+def home():
+    data_list = [
+        {"name": "Cofe", "description": "Good beverage"},
+        {"name": "Tea", "description": "Bad beverage"},
+        {"name": "Blech", "description": "Awesome beverage (cures autism)"},
+    ]
+    return render_template("home.html", dataList=data_list)
+
+
+@app.route("/receipt/<rec_id>")
+def receipt(rec_id):
+    data_list = db.print_receipt(rec_id)
+    return render_template("home.html", dataList=data_list)
+
+
+@app.route("/summary")
 def spending():
     data_list = db.get_summary()
     usersList = [
@@ -44,9 +61,9 @@ def spending():
     ]
     return render_template("user_debts.html", usersList=usersList)
 
-@app.route("/recipe/<rec_id>")
-def recipe(rec_id):
-    data_list = db.print_recipe(rec_id)
+@app.route("/receipt/<rec_id>")
+def receipt(rec_id):
+    data_list = db.print_receipt(rec_id)
     return render_template("home.html", dataList=data_list)
 
 @app.route("/receipts")
@@ -72,10 +89,11 @@ def add_receipt() -> str:
         if file.mimetype not in SUPPORTED_MIMETYPES:
             return f"ERR: {file.mimetype} is not supported"
         filename = f"{get_new_upload_filename()}.{SUPPORTED_MIMETYPES[file.mimetype]}"
-        file.save(upload_folder / filename)
-        return redirect(
-            url_for("static", filename=f'{app.config["UPLOAD_FOLDER"]}/{filename}')
-        )
+        filepath = upload_folder / filename
+        file.save(filepath)
+        data = ocr_read(filepath, file.mimetype == "application/pdf")
+        rec_id = db.add_receipt(data)
+        return redirect(url_for("receipt", rec_id=f"{rec_id}"))
     return render_template("upload.html")
 
 if __name__ == "__main__":

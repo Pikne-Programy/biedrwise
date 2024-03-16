@@ -1,9 +1,5 @@
-import re
 import cv2
 import pytesseract
-import numpy as np
-from skimage.filters import threshold_local
-from pytesseract import Output
 from pdf2image import convert_from_path
 
 def is_number(line) -> bool:
@@ -14,10 +10,9 @@ def pdf_to_img(file):
     return img
 
 
-def read(file, pdf=True) -> dict:
-    # if file is pdf
-    file = convert_from_path(file, 500)
-    # else it has to be omitted
+def ocr_read(file: str, pdf: bool) -> dict:
+    if pdf:
+        file = convert_from_path(file, 500)
     image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
     extracted_text = pytesseract.image_to_string(image, lang="pol", config="--psm 6")
     # print(extracted_text)

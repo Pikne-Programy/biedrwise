@@ -2,7 +2,7 @@
 import os
 from sys import stderr
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, date
 from flask import Flask, request, redirect, url_for, render_template
 
 from db.db import DataBase
@@ -38,7 +38,8 @@ def get_new_upload_filename():
 @app.route("/receipt/<rec_id>", methods=['POST', 'GET'])
 def receipt(rec_id):
     if request.method == "POST":
-        print(request.form, file=stderr)
+        print("kurwa", repr(request.form), file=stderr)
+        # lista indeks rowa -> lista id
         print('.', file=stderr)
         return redirect('/')
     else:
@@ -64,8 +65,8 @@ def receipts():
     #     {"date": "2024-02-28", "price": "123.00zł", 'src':'/receipt/2'},
     # ]
     receipt_list = db.get_receipts()
-    receipt_list = [{**x, 'src': f'/receipt/{int(x["payed"])}'} for x in receipt_list]
     print(receipt_list, file=stderr)
+    receipt_list = [{**x, 'src': f'/receipt/{int(x["payed"])}'} for x in receipt_list]
     return render_template("receipts.html", receipt_list=receipt_list)
 
 @app.route("/add-receipt", methods=["GET", "POST"])
@@ -75,7 +76,9 @@ def add_receipt() -> str:
     GET: print upload file form
     POST: process uploaded file
     """
-    if request.method == "POST" and "file" in request.files:
+    if request.method == "POST":
+        if "file" not in request.files or "who" not in request.form:
+            return "ERROR: invalid request"
         file = request.files["file"]
         if not file:
             return "ERR: no file"
@@ -85,10 +88,14 @@ def add_receipt() -> str:
         filepath = upload_folder / filename
         file.save(filepath)
         data = ocr_read(str(filepath.absolute()), file.mimetype == "application/pdf")
-        rec_id = db.add_receipt(data)
-        print(request.form)
+        print("\n"*9,request.form, file=stderr)
+        print("WHO", request.form["who"], file=stderr)
+        rec_id = db.add_receipt(
+            data, (date.today().isoformat(), 0.0, request.form["who"])
+        )
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
     return render_template("upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(','))
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

@@ -13,23 +13,18 @@ def pdf_to_img(filename):
     img = convert_from_path(filename, 500)
     path = f"{filename}.png"
     img[0].save(path, "PNG")
-    assert Path(path).is_file()
     return path
 
 
 def ocr_read(filenane: str, pdf: bool) -> dict:
     if pdf:
-        filenane = pdf_to_img(filenane)[0]
-    image = cv2.imread(filenane, cv2.IMREAD_GRAYSCALE)  # FIXME: imread returns None
-    print(image, file=stderr)
+        filenane = pdf_to_img(filenane)
+    image = cv2.imread(filenane, cv2.IMREAD_GRAYSCALE)
     extracted_text = pytesseract.image_to_string(image, lang="pol", config="--psm 6")
-    # print(extracted_text)
     idx = extracted_text.find("Wartość")
     idx_end = extracted_text.find("Sprzedaż")
     new_text = extracted_text[idx + 8 : idx_end]
-    # print(new_text)
     lines = new_text.split("\n")
-    # print(lines)
     res = {}
     for idx, line in enumerate(lines):
         if "Rabat" in line or is_number(line) or not len(line):
@@ -61,5 +56,4 @@ def ocr_read(filenane: str, pdf: bool) -> dict:
                 res[product_name] = (new_price, new_cnt)
             else:
                 res[product_name] = (float(price), float(cnt))
-    # print(res)
     return res

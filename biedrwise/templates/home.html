@@ -1,14 +1,38 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1 class="page_title">Home</h1>
-      <div class="box">
-        <section class="section">
-            <h1 class="title is-1">Title of box</h1>
-            <ol class="Content Ordered list alternative Class">
-              <li>dupa</li>
-              <li>cycki</li>
-              <li>cipa</li>
-          </ol>
-        </section>
-{% endblock content %}
+<section class="section">
+  <div class="box">
+    <section class="section">
+      <div class="list">
+
+
+        <div class="list-item">
+          <div class="list-item-image">
+            <figure class="image is-64x64">
+              <img class="is-square" src="https://i.ibb.co/7Q597r4/Coffee-icon-2048x2048-plv1v89d.png">
+            </figure>
+          </div>
+
+          <div class="list-item-content">
+            <div class="list-item-title is-size-2">Cofee</div>
+            <div class="list-item-description">Good beverage</div>
+          </div>
+
+          <div class="list-item-controls">
+            <div class="buttons is-right">
+              <div class="field">
+                <label class="b-checkbox checkbox">
+                  <input type="checkbox" value="false" checked>
+                  <span class="check"></span>
+                  <span class="control-label is-size-5">Checkbox</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr style="background-color: black;">
+      </div>
+    </section>
+    {% endblock content %}

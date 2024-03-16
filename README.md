@@ -26,3 +26,9 @@ docker compose up -d --build && docker compose logs -f
 ```sh
 docker compose down; docker compose up -d --build
 ```
+
+6. if you want to get shell inside container:
+
+```sh
+docker compose exec biedrwise /bin/bash
+```

@@ -26,6 +26,7 @@ SUPPORTED_MIMETYPES = {
 }
 
 
+    
 def get_new_upload_filename():
     """
     Generate filename for new upload.
@@ -33,42 +34,20 @@ def get_new_upload_filename():
     """
     return datetime.today().isoformat().replace(":", "_")
 
-
-@app.route("/", methods=['GET', 'POST'])
-def home():
-    if request.method == "POST":
-        print(request.form, file=stderr)
-        print('.', file=stderr)
-        return redirect(url_for('home'))
-    else:
-        data_list = [
-            {"name": "Cofe", "description": "Good beverage", "cb": [f'cb_0_{j}' for j in range(4)]},
-            {"name": "Tea", "description": "Bad beverage","cb": [f'cb_1_{j}' for j in range(4)]},
-            {"name": "Blech", "description": "Awesome beverage (cures autism)", "cb": [f'cb_2_{j}' for j in range(4)]},
-        ]
-        return render_template("home.html", dataList=data_list)
-
-
-@app.route("/recipe/<rec_id>")
-def recipe(rec_id):
-    data_list = db.print_recipe(rec_id)
-    return render_template("home.html", dataList=data_list)
-
-
-@app.route("/summary")
+@app.route("/")
 def spending():
     data_list = db.get_summary()
-    return render_template("home.html", dataList=data_list)
-
-
-@app.route("/user_debts")
-def users():
     usersList = [
         {"name": "Marcin Cpp", "debt": "10.00zł"},
         {"name": "Kret Kretes", "debt": "21.37zł"},
         {"name": "Michał Pobuta", "debt": "125.00zł"},
     ]
     return render_template("user_debts.html", usersList=usersList)
+
+@app.route("/recipe/<rec_id>")
+def recipe(rec_id):
+    data_list = db.print_recipe(rec_id)
+    return render_template("home.html", dataList=data_list)
 
 @app.route("/receipts")
 def receipts():
@@ -98,7 +77,6 @@ def add_receipt() -> str:
             url_for("static", filename=f'{app.config["UPLOAD_FOLDER"]}/{filename}')
         )
     return render_template("upload.html")
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)

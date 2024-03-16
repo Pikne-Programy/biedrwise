@@ -1,5 +1,6 @@
 # pylint: disable=missing-module-docstring
 import os
+import re
 from sys import stderr
 from pathlib import Path
 from datetime import datetime, date
@@ -27,7 +28,6 @@ SUPPORTED_MIMETYPES = {
 }
 
 
-    
 def get_new_upload_filename():
     """
     Generate filename for new upload.
@@ -35,27 +35,36 @@ def get_new_upload_filename():
     """
     return datetime.today().isoformat().replace(":", "_")
 
-@app.route("/receipt/<rec_id>", methods=['POST', 'GET'])
+
+@app.route("/receipt/<rec_id>", methods=["POST", "GET"])
 def receipt(rec_id):
     if request.method == "POST":
         print("kurwa", repr(request.form), file=stderr)
+        for k, v in request.form.items(multi=False):
+            RE = r"^cb_(\d*)_(\d*)$"
+            m = re.match(RE, k)
+            a, b = m.group(1), m.group(2)
+            print((a, b), file=stderr)
+            # db.add_row_users(a, b)
         # lista indeks rowa -> lista id
-        print('.', file=stderr)
-        return redirect('/')
+        print(".", file=stderr)
+        return redirect("/")
     else:
         data_list = [{**x,
                       'cb': [f'cb_{x.row_id}_{j}' for j in range(4)],
                       } for i, x in enumerate(db.print_receipt(rec_id))]
         data = db.get_receipt_data(rec_id)
         print(data_list, file=stderr)
-        return render_template('home.html', dataList=data_list, head=data)
+        return render_template("home.html", dataList=data_list, head=data)
+
 
 @app.route("/")
 def spending():
     data_list = db.get_summary()
     print(data_list, file=stderr)
-    usersList = [{'name': x[0], 'debt':x[1]} for x in data_list]
+    usersList = [{"name": x[0], "debt": x[1]} for x in data_list]
     return render_template("user_debts.html", usersList=usersList)
+
 
 @app.route("/receipts")
 def receipts():
@@ -66,8 +75,9 @@ def receipts():
     # ]
     receipt_list = db.get_receipts()
     print(receipt_list, file=stderr)
-    receipt_list = [{**x, 'src': f'/receipt/{int(x["payed"])}'} for x in receipt_list]
+    receipt_list = [{**x, "src": f'/receipt/{int(x["payed"])}'} for x in receipt_list]
     return render_template("receipts.html", receipt_list=receipt_list)
+
 
 @app.route("/add-receipt", methods=["GET", "POST"])
 def add_receipt() -> str:
@@ -88,13 +98,15 @@ def add_receipt() -> str:
         filepath = upload_folder / filename
         file.save(filepath)
         data = ocr_read(str(filepath.absolute()), file.mimetype == "application/pdf")
-        print("\n"*9,request.form, file=stderr)
+        print("\n" * 9, request.form, file=stderr)
         print("WHO", request.form["who"], file=stderr)
         rec_id = db.add_receipt(
             data, (date.today().isoformat(), 0.0, 0)
         )
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
-    return render_template("upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(','))
+    return render_template(
+        "upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(",")
+    )
 
 
 if __name__ == "__main__":

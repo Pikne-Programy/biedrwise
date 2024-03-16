@@ -4,11 +4,11 @@
 <section class="section">
   <div class="box">
     <section class="section">
+      {% for data in dataList %}
       <div class="list">
-        {% for data in dataList %}
         <div class="tile is-ancestor">
           <div class="tile">
-                <div class="is-size-2">{{ data.name }}</div>
+            <div class="is-size-2">{{ data.name }}</div>
           </div>
           <div class="tile">
             <div class="is-size-4">{{ data.description }}</div>

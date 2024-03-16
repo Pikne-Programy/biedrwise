@@ -5,6 +5,7 @@ from sys import stderr
 from pathlib import Path
 from datetime import datetime, date
 from flask import Flask, request, redirect, url_for, render_template
+from collections import defaultdict
 
 from db.db import DataBase
 from ocr.reader import ocr_read
@@ -40,19 +41,25 @@ def get_new_upload_filename():
 def receipt(rec_id):
     if request.method == "POST":
         print("kurwa", repr(request.form), file=stderr)
+        d = defaultdict(lambda: [])
         for k, v in request.form.items(multi=False):
             RE = r"^cb_(\d*)_(\d*)$"
             m = re.match(RE, k)
             a, b = m.group(1), m.group(2)
-            print((a, b), file=stderr)
-            # db.add_row_users(a, b)
+            d[a] += [b]
+        for k, v in d.items():
+            db.add_row_users(k, v)
         # lista indeks rowa -> lista id
         print(".", file=stderr)
         return redirect("/")
     else:
-        data_list = [{**x,
-                      'cb': [f'cb_{x.row_id}_{j}' for j in range(4)],
-                      } for i, x in enumerate(db.print_receipt(rec_id))]
+        data_list = [
+            {
+                **x,
+                "cb": [f"cb_{x['row_id']}_{j}" for j in range(4)],
+            }
+            for i, x in enumerate(db.print_receipt(rec_id))
+        ]
         data = db.get_receipt_data(rec_id)
         print(data_list, file=stderr)
         return render_template("home.html", dataList=data_list, head=data)
@@ -100,9 +107,7 @@ def add_receipt() -> str:
         data = ocr_read(str(filepath.absolute()), file.mimetype == "application/pdf")
         print("\n" * 9, request.form, file=stderr)
         print("WHO", request.form["who"], file=stderr)
-        rec_id = db.add_receipt(
-            data, (date.today().isoformat(), 0.0, 0)
-        )
+        rec_id = db.add_receipt(data, (date.today().isoformat(), 0.0, 0))
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
     return render_template(
         "upload.html", ludzie="Marcin,Michał,Dominik,Gracjan".split(",")

@@ -14,9 +14,14 @@ class DataBase:
     def __del__(self):
         self.r.close()
 
-    def add_recipe(self):
+    def add_recipe(self, data):
+        assert isinstance(data, dict)
         rec_id = self.r.get('rec_id')
         self.r.incr('rec_id')
+        for name, val in data.items():
+            assert len(val) == 2
+            val_dict = {'name': name, 'price': val[0], 'count': val[1]}
+            self.add_row(rec_id, val_dict)
         return rec_id
 
     def add_row(self, rec_id, val_dict):

@@ -34,14 +34,19 @@ def get_new_upload_filename():
     return datetime.today().isoformat().replace(":", "_")
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
-    data_list = [
-        {"name": "Cofe", "description": "Good beverage"},
-        {"name": "Tea", "description": "Bad beverage"},
-        {"name": "Blech", "description": "Awesome beverage (cures autism)"},
-    ]
-    return render_template("home.html", dataList=data_list)
+    if request.method == "POST":
+        print(request.form, file=stderr)
+        print('.', file=stderr)
+        return redirect(url_for('home'))
+    else:
+        data_list = [
+            {"name": "Cofe", "description": "Good beverage", "cb": [f'cb_0_{j}' for j in range(4)]},
+            {"name": "Tea", "description": "Bad beverage","cb": [f'cb_1_{j}' for j in range(4)]},
+            {"name": "Blech", "description": "Awesome beverage (cures autism)", "cb": [f'cb_2_{j}' for j in range(4)]},
+        ]
+        return render_template("home.html", dataList=data_list)
 
 
 @app.route("/recipe/<rec_id>")

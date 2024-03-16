@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  biedrwise:
+    build:
+      context: biedrwise
+      dockerfile: biedrwise.dockerfile
+    volumes:
+      - ./biedrwise:/app
+      - venv:/app/venv
+    depends_on:
+      - redis
+    ports:
+      - 5000:5000
+    links:
+      - redis
+  redis:
+    image: redis
+    volumes:
+    - redis:/data
+    ports:
+      - 6379:6379
+volumes:
+  redis:
+  venv:

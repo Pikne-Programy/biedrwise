@@ -1,19 +1,22 @@
 import cv2
 import pytesseract
 from pdf2image import convert_from_path
+from sys import stderr
 
 def is_number(line) -> bool:
     return line.replace(",", "").isdigit()
 
-def pdf_to_img(file):
-    img = convert_from_path(file, 500)
-    return img
+def pdf_to_img(filename):
+    img = convert_from_path(filename, 500)
+    path = f"{filename}.png"
+    img[0].save(path, "PNG")
+    return path
 
 
-def ocr_read(file: str, pdf: bool) -> dict:
+def ocr_read(filenane: str, pdf: bool) -> dict:
     if pdf:
-        file = convert_from_path(file, 500)
-    image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+        filenane = pdf_to_img(filenane)[0]
+    image = cv2.imread(filenane, cv2.IMREAD_GRAYSCALE)
     extracted_text = pytesseract.image_to_string(image, lang="pol", config="--psm 6")
     # print(extracted_text)
     idx = extracted_text.find("Wartość")

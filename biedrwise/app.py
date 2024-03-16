@@ -81,7 +81,7 @@ def add_receipt() -> str:
         filename = f"{get_new_upload_filename()}.{SUPPORTED_MIMETYPES[file.mimetype]}"
         filepath = upload_folder / filename
         file.save(filepath)
-        data = ocr_read(filepath, file.mimetype == "application/pdf")
+        data = ocr_read(str(filepath.absolute()), file.mimetype == "application/pdf")
         rec_id = db.add_receipt(data)
         return redirect(url_for("receipt", rec_id=f"{rec_id}"))
     return render_template("upload.html")

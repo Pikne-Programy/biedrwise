@@ -29,6 +29,7 @@ class DataBase:
             'sum': sum(prices),
             'payed': data[2]
         })
+        self.r.rpush("receipt:list", rec_id)
         return rec_id
 
     def _add_row(self, rec_id, val_dict):
@@ -64,6 +65,14 @@ class DataBase:
         user_id = x['payed']
         x['name'] = self.r.hget(f'user:{user_id}', 'name')
         return x
+
+    def get_receipts(self):
+        res = []
+        for rec_id in self.r.lrange(f'receipt:list', 0, -1):
+            res += [self.r.hgetall(f'receipt:{rec_id}:data')]
+        print(res)
+        return res
+
 
     def add_user(self, name):
         user_id = self.r.get('user_id')

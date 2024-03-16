@@ -58,11 +58,14 @@ def spending():
 
 @app.route("/receipts")
 def receipts():
-    receipt_list = [
-        {"date": "2024-03-10", "price": "12.00zł", 'src':'/receipt/0'},
-        {"date": "2024-03-09", "price": "18.00zł", 'src':'/receipt/1'},
-        {"date": "2024-02-28", "price": "123.00zł", 'src':'/receipt/2'},
-    ]
+    # receipt_list = [
+    #     {"date": "2024-03-10", "price": "12.00zł", 'src':'/receipt/0'},
+    #     {"date": "2024-03-09", "price": "18.00zł", 'src':'/receipt/1'},
+    #     {"date": "2024-02-28", "price": "123.00zł", 'src':'/receipt/2'},
+    # ]
+    receipt_list = db.get_receipts()
+    receipt_list = [{**x, 'src': f'/receipt/{int(x["payed"])}'} for x in receipt_list]
+    print(receipt_list, file=stderr)
     return render_template("receipts.html", receipt_list=receipt_list)
 
 @app.route("/add-receipt", methods=["GET", "POST"])

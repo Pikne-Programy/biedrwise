@@ -7,12 +7,12 @@ if __name__ == '__main__':
     rec_id = db.add_receipt({
         'jabłko': (1.25, 2.50),
         'banan': (2.34, 5.60)
-    })
+    }, ('2023-02-16', 28.00, 1))
 
     rec_id = db.add_receipt({
         'jabłko': (1.25, 2.50),
         'banan': (2.34, 5.60)
-    })
+    }, ('2023-03-16', 288.92, 0))
 
     db.print_receipt(0)
     db.print_receipt(1)

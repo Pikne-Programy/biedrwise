@@ -42,18 +42,18 @@ def receipt(rec_id):
         print('.', file=stderr)
         return redirect('/')
     else:
-        data_list = [{**x, 'cb': [f'cb_{i}_{j}' for j in range(4)]} for i, x in enumerate(db.print_receipt(rec_id))]
+        data_list = [{**x,
+                      'cb': [f'cb_{i}_{j}' for j in range(4)],
+                      } for i, x in enumerate(db.print_receipt(rec_id))]
+        data = db.get_receipt_data(rec_id)
         print(data_list, file=stderr)
-        return render_template('home.html', dataList=data_list)
+        return render_template('home.html', dataList=data_list, head=data)
 
 @app.route("/")
 def spending():
     data_list = db.get_summary()
-    usersList = [
-        {"name": "Marcin Cpp", "debt": "10.00zł"},
-        {"name": "Kret Kretes", "debt": "21.37zł"},
-        {"name": "Michał Pobuta", "debt": "125.00zł"},
-    ]
+    print(data_list, file=stderr)
+    usersList = [{'name': x[0], 'debt':x[1]} for x in data_list]
     return render_template("user_debts.html", usersList=usersList)
 
 @app.route("/receipts")

@@ -4,6 +4,7 @@ import redis
 class DataBase:
     def __init__(self, host='localhost', port=6379):
         self.r = redis.Redis(host=host, port=port, decode_responses=True)
+        # self.clear_all()
         if self.r.get('rec_id') is None:
             self.r.set('rec_id', 0)
         if self.r.get('row_id') is None:
@@ -14,14 +15,20 @@ class DataBase:
     def __del__(self):
         self.r.close()
 
-    def add_receipt(self, data: dict[str, tuple[float, float]]):
-        assert isinstance(data, dict)
+    def add_receipt(self, rows: dict[str, tuple[float, float]], data: tuple[str, float, int]):
+        assert isinstance(rows, dict)
         rec_id = self.r.get('rec_id')
         self.r.incr('rec_id')
-        for name, val in data.items():
+        for name, val in rows.items():
             assert len(val) == 2
             val_dict = {'name': name, 'price': val[0], 'count': val[1]}
             self._add_row(rec_id, val_dict)
+        prices = [float(x[0]) for x in rows.values()]
+        self.r.hset(f'receipt:{rec_id}:data', mapping={
+            'date': data[0],
+            'sum': sum(prices),
+            'payed': data[2]
+        })
         return rec_id
 
     def _add_row(self, rec_id, val_dict):
@@ -51,6 +58,12 @@ class DataBase:
             p.hgetall(f'row:{row_id}')
 
         return [h for h in p.execute()]
+
+    def get_receipt_data(self, rec_id):
+        x = self.r.hgetall(f'receipt:{rec_id}:data')
+        user_id = x['payed']
+        x['name'] = self.r.hget(f'user:{user_id}', 'name')
+        return x
 
     def add_user(self, name):
         user_id = self.r.get('user_id')

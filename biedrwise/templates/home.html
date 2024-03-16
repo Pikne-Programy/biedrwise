@@ -25,12 +25,14 @@
           </div>
           {% endfor %}
         </div>
+      <div class="tile">
+        <p class="is-size-3">Data: {{ head.date }}</p>
       </div>
       <div class="tile">
-        <p class="is-size-3">data</p>
+        <p class="is-size-3">kto płacił: {{ head.name }}</p>
       </div>
       <div class="tile">
-        <p class="is-size-3">koszt</p>
+        <p class="is-size-3">{{ head.sum }}zł</p>
       </div>
     </div>
   </div>
@@ -55,7 +57,7 @@
               <div class="is-size-2">{{ data.name }}</div>
             </div>
             <div class="tile">
-              <div class="is-size-4">{{ data.description }}</div>
+              <div class="is-size-4">{{ data.price }}</div>
             </div>
             <div class="tile is-ancestor is-vertical is-2">
               {% for j in range(4) %}

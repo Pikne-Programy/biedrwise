@@ -45,13 +45,16 @@ class DataBase:
         for row_id in self.r.lrange(f'recipe:list:{rec_id}', 0, -1):
             p.hgetall(f'row:{row_id}')
 
-        for h in p.execute():
-            print(h)
+        return [h for h in p.execute()]
 
-    def add_user(self):
+    def add_user(self, name):
         user_id = self.r.get('user_id')
         self.r.incr('user_id')
-        self.r.set(f'user:{user_id}:spending', 0)
+        self.r.hset(f'user:{user_id}', mapping={
+            'spending': 0,
+            'name': name
+        })
+        self.r.rpush('user:list', user_id)
         return user_id
 
     def add_row_users(self, row_id, users):
@@ -62,4 +65,15 @@ class DataBase:
         for user_id in users:
             price = self.r.hget(f'row:{row_id}', 'price')
             frac_price = float(price) / len(users)
-            self.r.incrbyfloat(f'user:{user_id}:spending', frac_price)
+            self.r.hincrbyfloat(f'user:{user_id}', 'spending', frac_price)
+
+    def get_user_spending(self, user_id):
+        assert user_id is not None
+        return self.r.hget(f'user:{user_id}', 'spending')
+
+    def get_summary(self):
+        summary = []
+        for user_id in self.r.lrange(f'user:list', 0, -1):
+            user_data = self.r.hgetall(f'user:{user_id}')
+            summary += [(user_data['name'], float(user_data['spending']))]
+        return summary

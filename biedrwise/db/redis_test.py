@@ -1,7 +1,7 @@
 from db import DataBase
 
 if __name__ == '__main__':
-    db = DataBase('localhost', 6379)
+    db = DataBase('redis', 6379)
     db.clear_all()
 
     rec_id = db.add_recipe()
@@ -33,8 +33,10 @@ if __name__ == '__main__':
 
     # db.del_recipe(1)
 
-    usr_id1 = db.add_user()
-    usr_id2 = db.add_user()
+    usr_id1 = db.add_user('user1')
+    usr_id2 = db.add_user('user2')
     print(usr_id1, usr_id2)
     db.add_row_users(0, [usr_id1, usr_id2])
     db.add_row_users(1, [usr_id1])
+
+    print(db.get_summary())
